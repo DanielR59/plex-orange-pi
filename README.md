@@ -15,13 +15,13 @@ sudo useradd kbs -G sudo
 Agregar esto al sudoers para correr sudo sin password 
 
 ```
-sudo visudo
+%sudo   ALL=(ALL:ALL) NOPASSWD:ALL
 ```
 
 Nota: puedes acceder a la configuracion mencionada con el comando:
 
 ```
-%sudo   ALL=(ALL:ALL) NOPASSWD:ALL
+sudo visudo
 ```
 
 Agregar esta linea a `etc/ssh/sshd_config` para que sólo tu usuario pueda hacer ssh
