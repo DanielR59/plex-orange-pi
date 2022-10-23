@@ -1,12 +1,8 @@
-# Plex sobre Docker en Raspberry
+# Plex sobre Docker en Orange Pi
 
-Con este repo podes crear tu propio server que descarga tus series y peliculas automáticamente, y cuando finaliza, las copia al directorio `media/` donde Plex las encuentra y las agrega a tu biblioteca.
+Pueden encontrar el repositorio original dedicado a raspberry pi [aqui](https://github.com/pablokbs/plex-rpi)
 
-También agregué un pequeño server samba por si querés compartir los archivos por red
-
-Todo esto es parte de unos tutoriales que estoy subiendo a [Youtube](https://www.youtube.com/playlist?list=PLqRCtm0kbeHCEoCM8TR3VLQdoyR2W1_wv)
-
-NOTA: Esta repo fue actualizada para correr usando flexget y transmission [en este video](https://youtu.be/TqVoHWjz_tI), podés todavia acceder a la versión vieja (con rtorrent) en la branch [rtorrent](https://github.com/pablokbs/plex-rpi/tree/rtorrent)
+Con este repo podes crear tu propio server que descarga tus series y peliculas automáticamente usando flexget y trnasmission, y cuando finaliza, las copia al directorio `media/` donde Plex las encuentra y las agrega a tu biblioteca.
 
 ## Requerimientos iniciales
 
@@ -16,13 +12,18 @@ Agregar tu usuario (cambiar `kbs` con tu nombre de usuario)
 sudo useradd kbs -G sudo
 ```
 
-Agregar esto al sudoers para correr sudo sin password
+Agregar esto al sudoers para correr sudo sin password 
+Nota: puedes acceder a la configuracion mencionada con el comando:
+```
+sudo visudo
+```
 
 ```
 %sudo   ALL=(ALL:ALL) NOPASSWD:ALL
 ```
 
-Agregar esta linea a `sshd_config` para que sólo tu usuario pueda hacer ssh
+Agregar esta linea a `etc/ssh/sshd_config` para que sólo tu usuario pueda hacer ssh
+Nota: cambiar `kbs` con tu usuario
 
 ```
 echo "AllowUsers kbs" | sudo tee -a /etc/ssh/sshd_config
@@ -43,15 +44,15 @@ sudo apt-get update && sudo apt-get install -y \
      ntfs-3g
 ```
 
-Instalar Docker
+Instalar Docker (instrucciones tomadas del repositorio de [armbian](https://github.com/armbian/documentation/blob/master/docs/User-Guide_Advanced-Features.md#how-to-run-docker))
 
 ```
+sudo apt-get remove docker docker-engine docker.io containerd runc
+sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-sudo apt-key fingerprint 0EBFCD88
-echo "deb [arch=armhf] https://download.docker.com/linux/debian \
-     $(lsb_release -cs) stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list
-sudo apt-get update && sudo apt-get install -y --no-install-recommends docker-ce docker-compose
+sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+sudo apt update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
 Modificá tu docker config para que guarde los temps en el disco:
