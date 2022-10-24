@@ -53,9 +53,18 @@ Instalar Docker (instrucciones tomadas del repositorio de [armbian](https://gith
 sudo apt-get remove docker docker-engine docker.io containerd runc
 sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
 sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
 sudo apt update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+Agregar tu usuario al grupo docker 
+
+```
+# Add kbs to docker group
+sudo usermod -a -G docker kbs
+#(logout and login)
+docker-compose up -d
 ```
 
 Modificá tu docker config para que guarde los temps en el disco:
@@ -66,14 +75,6 @@ sudo vim /etc/default/docker
 export DOCKER_TMPDIR="/mnt/storage/docker-tmp"
 ```
 
-Agregar tu usuario al grupo docker 
-
-```
-# Add kbs to docker group
-sudo usermod -a -G docker kbs
-#(logout and login)
-docker-compose up -d
-```
 
 Montar el disco (es necesario ntfs-3g si es que tenes tu disco en NTFS)
 NOTA: en este [link](https://youtu.be/OYAnrmbpHeQ?t=5543) pueden ver la explicación en vivo
