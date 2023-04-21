@@ -9,7 +9,7 @@ services:
     stdin_open: true
     tty: true
     environment:
-      - TZ=America/Argentina/Mendoza
+      - TZ=America/Mexico_City
     ports:
       - 139:139
       - 445:445
@@ -36,17 +36,26 @@ services:
     network_mode: "host" # Solo funciona en Linux
 
   transmission:
-    image : jaymoulin/transmission:3.00-1.6.1
-    command: transmission-daemon -f -g /config
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Mexico_City
+      - TRANSMISSION_WEB_HOME= #optional
+      - USER= #optional
+      - PASS= #optional
+      - WHITELIST= #optional
+      - PEERPORT= #optional
+      - HOST_WHITELIST= #optional
     volumes:
       - ./transmission:/config
       - ${STORAGE}/torrents:/downloads
+      - ./transmission/watch:/watch
     ports:
       - 9091:9091
       - 51413:51413
       - 51413:51413/udp
-    expose:
-      - 9091
     restart: unless-stopped
 
   flexget:
