@@ -2,7 +2,7 @@
 
 Pueden encontrar el repositorio original dedicado a raspberry pi [aqui](https://github.com/pablokbs/plex-rpi)
 
-Con este repo podes crear tu propio server que descarga tus series y peliculas automáticamente usando flexget y trnasmission, y cuando finaliza, las copia al directorio `media/` donde Plex las encuentra y las agrega a tu biblioteca.
+Con este repo puedes crear tu propio server que descarga tus series y peliculas automáticamente usando flexget y trnasmission, y cuando finaliza, las copia al directorio `media/` donde Plex las encuentra y las agrega a tu biblioteca.
 
 ## Requerimientos iniciales
 
@@ -14,14 +14,9 @@ sudo useradd kbs -G sudo
 
 Agregar esto al sudoers para correr sudo sin password 
 
+Nota: puedes acceder a la configuracion mencionada con el comando: `sudo visudo`
 ```
 %sudo   ALL=(ALL:ALL) NOPASSWD:ALL
-```
-
-Nota: puedes acceder a la configuracion mencionada con el comando:
-
-```
-sudo visudo
 ```
 
 Agregar esta linea a `etc/ssh/sshd_config` para que sólo tu usuario pueda hacer ssh
@@ -47,25 +42,34 @@ sudo apt-get update && sudo apt-get install -y \
      ntfs-3g
 ```
 
-Instalar Docker (instrucciones tomadas del repositorio de [armbian](https://github.com/armbian/documentation/blob/master/docs/User-Guide_Advanced-Features.md#how-to-run-docker))
+## Instalar Docker 
+
+Para esto aprovecharemos las funcionalidades gráficas de armbian
 
 ```
-sudo apt-get remove docker docker-engine docker.io containerd runc
-sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-sudo apt-key fingerprint 0EBFCD88
-# sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-sudo apt update
-sudo apt-get install docker-ce docker-ce-cli containerd.io
-sudo apt install docker-compose-plugin
+sudo armbian-config
 ```
 
-En caso de no funcionar lo anterior en Jammy, puedes utilizar el [script de conveniencia para raspberry pi](https://docs.docker.com/engine/install/debian/#install-using-the-convenience-script)
+
+Nos dirigimos a la opción Software y presionamos Enter
+![hola](img/armbian-config-1.png)
+
+
+Damos Enter sobre _Softy_
+
+![hola](img/armbian-config-2.png)
+
+
+Buscamos la opción Docker y lo seleccionamos presionando la barra espaciadora, posterior presionamos enter para que comience la instalación. Una vez que finalice podemos salir del asistente de configuración.
+
+
+![hola](img/armbian-config-3.png)
+
+
+Instala docker-compose
 
 ```
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
+sudo apt install docker-compose
 ```
 
 
@@ -76,10 +80,11 @@ Nota cambiar `kbs` por tu usuario
 # Add kbs to docker group
 sudo usermod -a -G docker kbs
 #(logout and login)
-#docker-compose up -d
 ```
 
-Montar el disco (es necesario ntfs-3g si es que tenes tu disco en NTFS)
+## Montar disco externo
+
+Montar el disco (es necesario ntfs-3g si es que tienes tu disco en NTFS)
 NOTA: en este [link](https://youtu.be/OYAnrmbpHeQ?t=5543) pueden ver la explicación en vivo
 
 ```
@@ -90,13 +95,13 @@ fdisk -l
 # pueden usar el siguiente comando para obtener el UUID
 ls -l /dev/disk/by-uuid/
 # y simplemente montamos el disco en el archivo /etc/fstab (pueden hacerlo por el editor que les guste o por consola)
-echo UUID="{nombre del disco o UUID que es único por cada disco}" {directorio donde queremos montarlo} (por ejemplo /mnt/storage) ntfs-3g defaults,auto 0 0 | \
+echo UUID="{nombre del disco o UUID que es único por cada disco}" {directorio donde queremos montarlo, por ejemplo /mnt/storage} ntfs-3g defaults,auto 0 0 | \
      sudo tee -a /etc/fstab
 # por último para que lea el archivo fstab
 mount -a (o reiniciar)
 ```
 
-Modificá tu docker config para que guarde los temps en el disco:
+Modifica tu docker config para que guarde los temps en el disco:
 
 ```
 sudo vim /etc/default/docker
